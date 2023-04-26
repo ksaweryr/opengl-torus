@@ -1,0 +1,4 @@
+fragment.c
+vertex.c
+*.o
+a.out
