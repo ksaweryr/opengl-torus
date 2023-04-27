@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <thread>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -17,6 +18,7 @@ int fragment_src_len = _fragment_src_len;
 
 constexpr int R = 360;
 constexpr int r = 20;
+constexpr int framerate = 144;
 
 class Program {
 private:
@@ -62,7 +64,8 @@ public:
     void onResize(int width, int height) {
         this->width = width;
         this->height = height;
-        glViewport(0, 0, width, height);
+        int size = std::min(width, height);
+        glViewport((width - size) >> 1, (height - size) >> 1, size, size);
     }
 
     void initializeGlArrays() {
@@ -141,6 +144,7 @@ public:
             setUniform("width", width);
             setUniform("height", height);
             glDrawArrays(GL_POINTS, 0, R * r);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000 / framerate));
         }
     }
 
