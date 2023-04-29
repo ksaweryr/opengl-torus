@@ -6,6 +6,8 @@ uniform float time;
 uniform int R;
 uniform int r;
 
+out vec4 position;
+
 mat4 translate(float x, float y, float z) {
     return mat4(
         1, 0, 0, 0,
@@ -45,5 +47,5 @@ mat4 rotateZ(float theta) {
 void main() {
     float angle_i = v.x * 2.0f * PI / R;
     float angle_j = v.y * 2.0f * PI / r;
-    gl_Position = rotateZ(time * PI / 7.0f) * rotateX(time * PI / 4.0f) * rotateY(angle_i) * translate(0.5f, 0, 0) * rotateZ(angle_j) * vec4(0.0f, 0.15f, 0.0f, 1.0f);
+    gl_Position = position = rotateZ(time * PI / 7.0f) * rotateX(time * PI / 4.0f) * rotateY(angle_i) * translate(0.5f, 0, 0) * rotateZ(angle_j) * vec4(0.0f, 0.15f, 0.0f, 1.0f);
 }

@@ -1,12 +1,11 @@
 #version 330 core
 
+in vec4 position;
 out vec4 FragColor;
-uniform int width;
-uniform int height;
 
 void main() {
-    float x = gl_FragCoord.x / width;
-    float y = gl_FragCoord.y / height;
+    float x = (position.x + 1.0f) / 2;
+    float y = (position.y + 1.0f) / 2;
     float z = gl_FragCoord.z;
     float intensity = 1.0f - z;
     FragColor = vec4(x * intensity, y * intensity, x * (1 - y) * intensity, 1.0f);
