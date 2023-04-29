@@ -7,11 +7,17 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-extern "C" unsigned char _vertex_src[];
-extern "C" unsigned char _fragment_src[];
+#define extern_shader(name) extern "C" unsigned char _ ## name ## _src[];\
+const char* name ## _src = reinterpret_cast<const char*>(_ ## name ## _src);
 
-const char* vertex_src = reinterpret_cast<const char*>(_vertex_src);
-const char* fragment_src = reinterpret_cast<const char*>(_fragment_src);
+// extern "C" unsigned char _vertex_src[];
+// extern "C" unsigned char _fragment_src[];
+
+// const char* vertex_src = reinterpret_cast<const char*>(_vertex_src);
+// const char* fragment_src = reinterpret_cast<const char*>(_fragment_src);
+extern_shader(vertex)
+extern_shader(geometry)
+extern_shader(fragment)
 
 constexpr int R = 360;
 constexpr int r = 20;
@@ -87,15 +93,17 @@ public:
     }
 
     void initializeGlShaders() {
-        GLuint vertex_shader, fragment_shader;
+        GLuint vertex_shader, fragment_shader, geometry_shader;
         GLint ok;
         char log[512];
 
         vertex_shader = compileGlShader(GL_VERTEX_SHADER, vertex_src);
+        geometry_shader = compileGlShader(GL_GEOMETRY_SHADER, geometry_src);
         fragment_shader = compileGlShader(GL_FRAGMENT_SHADER, fragment_src);
 
         shaderProgram = glCreateProgram();
         glAttachShader(shaderProgram, vertex_shader);
+        glAttachShader(shaderProgram, geometry_shader);
         glAttachShader(shaderProgram, fragment_shader);
         glLinkProgram(shaderProgram);
 
@@ -106,6 +114,7 @@ public:
         }
 
         glDeleteShader(vertex_shader);
+        glDeleteShader(geometry_shader);
         glDeleteShader(fragment_shader);
     }
 

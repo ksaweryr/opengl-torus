@@ -1,4 +1,5 @@
 fragment.c
+geometry.c
 vertex.c
 *.o
 a.out
