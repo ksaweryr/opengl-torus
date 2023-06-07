@@ -10,11 +10,6 @@
 #define extern_shader(name) extern "C" unsigned char _ ## name ## _src[];\
 const char* name ## _src = reinterpret_cast<const char*>(_ ## name ## _src);
 
-// extern "C" unsigned char _vertex_src[];
-// extern "C" unsigned char _fragment_src[];
-
-// const char* vertex_src = reinterpret_cast<const char*>(_vertex_src);
-// const char* fragment_src = reinterpret_cast<const char*>(_fragment_src);
 extern_shader(vertex)
 extern_shader(geometry)
 extern_shader(fragment)
@@ -52,7 +47,7 @@ public:
         }
 
         glfwMakeContextCurrent(window);
-        glfwSetWindowSizeCallback(window, [](GLFWwindow* _, int width, int height) { Program::getInstance()->onResize(width, height); });
+        glfwSetWindowSizeCallback(window, [](__attribute__((unused)) GLFWwindow* _, int width, int height) { Program::getInstance()->onResize(width, height); });
         glViewport(0, 0, width, height);
         GLenum err = glewInit();
 
@@ -72,24 +67,14 @@ public:
     }
 
     void initializeGlArrays() {
-        std::vector<GLuint> v(R * r * 2);
-
-        for(int i = 0; i < R; i++) {
-            for(int j = 0; j < r; j++) {
-                int idx = (r * i + j) << 1;
-                v[idx] = i;
-                v[idx + 1] = j;
-            }
-        }
+        GLuint dummy = 0;
 
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
 
         glGenBuffers(1, &vbo);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(GLuint), v.data(), GL_STATIC_DRAW);
-        glVertexAttribIPointer(0, 2, GL_UNSIGNED_INT, 2 * sizeof(GLuint), (void*)0);
-        glEnableVertexAttribArray(0);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLuint), &dummy, GL_STATIC_DRAW);
     }
 
     void initializeGlShaders() {
@@ -147,7 +132,7 @@ public:
             setUniform("time", static_cast<float>(glfwGetTime()));
             setUniform("R", R);
             setUniform("r", r);
-            glDrawArrays(GL_POINTS, 0, R * r);
+            glDrawArraysInstanced(GL_POINTS, 0, 2, R * r);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / framerate));
         }
     }
